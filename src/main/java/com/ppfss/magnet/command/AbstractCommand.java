@@ -142,7 +142,7 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
 
         @Override
         public String getName() {
-            return "помощь";
+            return "help";
         }
 
         @Override

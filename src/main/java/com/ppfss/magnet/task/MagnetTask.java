@@ -7,8 +7,10 @@ package com.ppfss.magnet.task;
 import com.ppfss.magnet.cache.MagnetCache;
 import com.ppfss.magnet.domain.MagnetData;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,16 +24,22 @@ public class MagnetTask extends BukkitRunnable {
     private final long delay;
     @Getter
     private final long period;
+    private final Particle particle;
+    @Getter
+    @Setter
+    private boolean stopped = false;
 
-    public MagnetTask(MagnetCache cache, long delay, long period) {
+    public MagnetTask(MagnetCache cache, long delay, long period, Particle particle) {
         this.cache = cache;
+        this.particle = particle;
         this.delay = delay;
         this.period = period;
     }
 
     @Override
     public void run() {
-        Map<UUID, MagnetData> activeMagnets = cache.getActiveMagnets();
+        if (stopped)return;
+        Map<UUID, Integer> activeMagnets = cache.getActiveMagnets();
 
         List<Player> players = activeMagnets.keySet()
                 .stream()
@@ -39,106 +47,60 @@ public class MagnetTask extends BukkitRunnable {
                 .filter(Objects::nonNull)
                 .toList();
 
+
         for (Player player : players) {
             Location loc = player.getLocation();
-            MagnetData data = activeMagnets.get(player.getUniqueId());
-            int radius = data.radius();
+            int level = activeMagnets.get(player.getUniqueId());
+            MagnetData data = cache.getMagnetLevel(level);
+            double radius = data.radius();
 
+
+            int limit = data.limit();
+            if (limit == 0)limit = 100;
 
             List<Item> items = player.getNearbyEntities(radius, radius, radius)
                     .stream()
                     .filter(e -> e instanceof Item)
                     .map(e -> (Item) e)
+                    .limit(limit)
                     .toList();
 
-            moveItems(loc, items, data);
+            moveItems(loc, items, data, player);
         }
     }
 
-    private void moveItems(Location location, List<Item> items, MagnetData data){
+    private void moveItems(Location location, List<Item> items, MagnetData data, Player player) {
+        double slowRadius = data.radius() * 0.3;
+        double teleportDistance = 0.6;
+
         for (Item item : items) {
             double distance = item.getLocation().distance(location);
 
-            if (distance > data.radius() || distance < 0.6){
+            if (distance > data.radius()) continue;
+
+            if (distance <= teleportDistance) {
+                Location teleportLoc = location.clone().add(0, 1, 0);
+                item.teleport(teleportLoc);
                 continue;
             }
 
-            Vector vector = location.toVector().subtract(item.getLocation().toVector());
-            item.setVelocity(vector.multiply(data.strength()));
+            Vector direction = location.toVector()
+                    .subtract(item.getLocation().toVector())
+                    .normalize();
+
+
+            item.setVelocity(direction.multiply(data.speed()));
+
+            if (particle != null) {
+                player.spawnParticle(
+                        particle,
+                        item.getLocation(),
+                        3,
+                        0.1, 0.1, 0.1,
+                        0.0
+                );
+            }
         }
-
-
     }
 
-//    private void initGlobalTask() {
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//
-//
-//                for (UUID uuid : players.keySet()) {
-//                    Player player = Bukkit.getPlayer(uuid);
-//                    if (player == null || !player.isOnline()) {
-//                        removePlayer(uuid);
-//                        continue;
-//                    }
-//
-//                    if (config.shiftRequired && !player.isSneaking()) {
-//                        continue;
-//                    }
-//
-//                    int radius = players.getOrDefault(uuid, config.defaultRadius);
-//                    List<Item> nearbyItems = player.getNearbyEntities(radius, radius, radius).stream()
-//                            .filter(e -> e instanceof Item)
-//                            .map(e -> (Item) e)
-//                            .toList();
-//
-//                    for (Item item : nearbyItems) {
-//                        magnetItems.put(item, new MagnetData(uuid, radius));
-//                    }
-//                }
-//
-//                moveAllMagnetItems();
-//            }
-//        }.runTaskTimer(plugin, 0L, 20L);
-//    }
-//
-//    private void moveAllMagnetItems() {
-//        for (Iterator<Map.Entry<Item, MagnetData>> it = magnetItems.entrySet().iterator(); it.hasNext(); ) {
-//            Map.Entry<Item, MagnetData> entry = it.next();
-//            Item item = entry.getKey();
-//            MagnetData data = entry.getValue();
-//
-//            Player owner = Bukkit.getPlayer(data.owner());
-//            if (owner == null || !owner.isOnline() || !item.isValid()) {
-//                it.remove();
-//                continue;
-//            }
-//
-//            ItemStack mainHand = owner.getInventory().getItemInMainHand();
-//            ItemStack offHand = owner.getInventory().getItemInOffHand();
-//            ItemStack helmet = owner.getInventory().getHelmet();
-//
-//            boolean isActiveMagnet = isEnabledAndValid(mainHand, MagnetType.RIGHTHAND) ||
-//                    isEnabledAndValid(offHand, MagnetType.LEFTHAND) ||
-//                    isEnabledAndValid(helmet, MagnetType.HEAD);
-//
-//            if (!isActiveMagnet) {
-//                it.remove();
-//                continue;
-//            }
-//
-//            Location itemLoc = item.getLocation();
-//            Location playerLoc = owner.getLocation().add(0, 1, 0);
-//            double distance = itemLoc.distance(playerLoc);
-//
-//            if (distance > data.radius() || distance < 0.6) {
-//                it.remove();
-//                continue;
-//            }
-//
-//            Vector direction = playerLoc.toVector().subtract(itemLoc.toVector()).normalize();
-//            item.setVelocity(direction.multiply(config.defaultSpeed));
-//        }
-//    }
 }

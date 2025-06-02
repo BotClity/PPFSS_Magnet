@@ -5,8 +5,8 @@
 package com.ppfss.magnet.domain;
 
 public record MagnetData(
-        int radius,
-        int strength,
+        double radius,
+        double speed,
         int limit
 ) {
 }

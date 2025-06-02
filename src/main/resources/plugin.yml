@@ -2,6 +2,8 @@ name: PPFSS_Magnet
 version: '${project.version}'
 main: com.ppfss.magnet.PPFSS_Magnet
 api-version: '1.16'
-load: STARTUP
-depend: [PPFSS_Libs]
+load: POSTWORLD
 authors: [PPFSS]
+commands:
+  magnet:
+    aliases: ["магнит"]

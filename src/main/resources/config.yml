@@ -1,0 +1,60 @@
+enchant:
+  lore-format: "&7Магнит %level%"
+
+  table:
+    enable: true
+    chance: 10
+  name: 'Магнит'
+
+  max-level: 3
+
+  levels:
+    1:
+      radius: 5.0
+      speed: 0.3
+      limit: 10
+    2:
+      radius: 10.0
+      speed: 0.5
+      limit: 20
+    3:
+      radius: 15.0
+      speed: 0.8
+      limit: 30
+
+  period-ticks: 10
+  particles:
+    enabled: true
+    type: END_ROD
+  sound: ENTITY_ITEM_PICKUP
+  allowed-items:
+    - PICKAXE
+    - AXE
+    - SHOVEL
+    - HEAD
+    - HELMET
+    - BOOK
+
+performance:
+  cpu-threshold: 80.0 # % загрузки CPU
+  ram-threshold: 90.0 # % загрузки RAM
+  check-interval-ticks: 1200 # 60 секунд
+
+messages:
+  help:
+    header: "§6Доступные команды для /%command%:"
+    format: "§e/%command% %subcommand% §7- %description%"
+    description: "Показывает список доступных команд"
+  no-permission-help: "§cУ вас нет прав!"
+  magnet:
+    activated: "[PPFSS]&aМагнит активирован!"
+    deactivation: "[PPFSS]&cМагнит отключён!"
+    stop-move: "&cНельзя перемещать активированный магнит"
+
+magnet-item:
+  name: "&cМаг&9нит"
+  default-level: 1
+  type: "PLAYER_HEAD"
+  value: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWJhOGViYzRjNmE4MTczMDk0NzQ5OWJmN2UxZDVlNzNmZWQ2YzFiYjJjMDUxZTk2ZDM1ZWIxNmQyNDYxMGU3In19fQ=="
+
+debug: false

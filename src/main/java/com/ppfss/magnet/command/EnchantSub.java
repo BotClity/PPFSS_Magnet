@@ -27,7 +27,7 @@ public class EnchantSub extends SubCommand{
 
     @Override
     public void execute(CommandSender sender, Command command, String label, String... args) {
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return;
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
@@ -49,7 +49,7 @@ public class EnchantSub extends SubCommand{
             }
         }
 
-        enchantService.applyEnchant(item, enchantLevel);
+        item = enchantService.enchantMagnet(item, enchantLevel, true);
 
         sender.sendMessage("&aПредмет успешно зачарован!");
     }

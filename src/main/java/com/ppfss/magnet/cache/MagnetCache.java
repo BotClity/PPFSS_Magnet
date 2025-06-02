@@ -15,27 +15,32 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class MagnetCache {
-    private final Map<UUID, MagnetData> activeMagnets = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> activeMagnets = new ConcurrentHashMap<>();
+    private final Map<Integer, MagnetData> levelList = new ConcurrentHashMap<>();
 
-    public void addActiveMagnet(UUID playerUUID, MagnetData magnet) {
-        activeMagnets.put(playerUUID, magnet);
+    public void addMagnetLevel(int level, MagnetData magnetData) {
+        levelList.put(level, magnetData);
     }
 
-    public MagnetData getActiveMagnet(UUID playerUUID) {
+    public MagnetData getMagnetLevel(int level) {return levelList.get(level);}
+
+    public void addActiveMagnet(UUID playerUUID, int level) {
+        activeMagnets.put(playerUUID, level);
+    }
+
+    public Integer getActiveMagnet(UUID playerUUID) {
         return activeMagnets.get(playerUUID);
     }
 
-    public MagnetData removeActiveMagnet(UUID playerUUID) {
-        return activeMagnets.remove(playerUUID);
+    public void removeActiveMagnet(UUID playerUUID) {
+        if (playerUUID == null)return;
+        activeMagnets.remove(playerUUID);
     }
 
     public boolean containsActiveMagnet(UUID playerUUID) {
         return activeMagnets.containsKey(playerUUID);
     }
 
-    public List<MagnetData> getAllActiveMagnets() {
-        return new ArrayList<>(activeMagnets.values());
-    }
 
     public List<UUID> getActivePlayers() {
         return new ArrayList<>(activeMagnets.keySet());

@@ -72,7 +72,6 @@ public abstract class SubCommand {
             onlyPlayerExecute(sender, command, label, args);
             return;
         }
-
         handle(sender, command, label, args);
     }
 

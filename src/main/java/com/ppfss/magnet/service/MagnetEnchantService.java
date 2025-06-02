@@ -3,7 +3,10 @@ package com.ppfss.magnet.service;
 import com.ppfss.magnet.domain.MagnetEnchantment;
 import com.ppfss.magnet.utils.ColorUtils;
 import com.ppfss.magnet.utils.EnchantmentRegister;
+import com.ppfss.magnet.utils.LogUtils;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,30 +16,35 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Getter
 public class MagnetEnchantService {
     private static final String NBT_KEY = "magnet_enchant";
     private final NamespacedKey magnetKey;
     private final Enchantment magnetEnchant;
-    private final String displayName;
+    private final String loreFormat;
 
 
     public MagnetEnchantService(Plugin plugin) {
         magnetKey = new NamespacedKey(plugin, "magnet");
         FileConfiguration cfg = plugin.getConfig();
 
+        loreFormat = cfg.getString("enchant.lore-format", "&7Магнит %level%").replace('&', '§');
 
         String name = cfg.getString("enchant.name", "Магнит");
-        displayName = ColorUtils.color(
-                cfg.getString("enchant.displayName", "§bМагнит")
-        );
 
-        magnetEnchant = new MagnetEnchantment(magnetKey, ColorUtils.color(name));
+        int maxLevel = cfg.getInt("enchant.max-level", 3);
+        List<String> allowedEnchants = cfg.getStringList("enchant.allowed-items");
+
+        magnetEnchant = new MagnetEnchantment(magnetKey, ColorUtils.color(name), maxLevel, allowedEnchants);
 
         EnchantmentRegister.registerEnchantments(magnetEnchant);
     }
 
-    public ItemStack removeEnchantment(ItemStack item) {
+    public ItemStack removeMagnet(ItemStack item) {
         if (item.getType() == Material.ENCHANTED_BOOK) {
             EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
 
@@ -56,13 +64,23 @@ public class MagnetEnchantService {
         return item;
     }
 
-    public boolean hasEnchant(ItemStack item){
+    public boolean isMagnet(ItemStack item){
+        Map<Enchantment, Integer> enchants;
+
+
         if (item.getType() == Material.ENCHANTED_BOOK){
             EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
-            return meta != null && meta.hasStoredEnchant(magnetEnchant);
+            if (meta == null)return false;
+
+            enchants = meta.getStoredEnchants();
+        }else{
+            enchants = item.getEnchantments();
         }
-        ItemMeta meta = item.getItemMeta();
-        return meta != null && meta.hasEnchant(magnetEnchant);
+
+        for (Enchantment enchant: enchants.keySet()){
+            if (enchant == magnetEnchant) return true;
+        }
+        return false;
     }
 
     public ItemStack enchantMagnet(ItemStack item, int level, boolean forced){
@@ -89,6 +107,7 @@ public class MagnetEnchantService {
             meta.addEnchant(magnetEnchant, level, false);
         }
 
+        addMagnetEnchantLore(meta, level);
         item.setItemMeta(meta);
         return item;
     }
@@ -114,8 +133,29 @@ public class MagnetEnchantService {
         }
 
         meta.addStoredEnchant(enchant, level, false);
+        addMagnetEnchantLore(meta, level);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public void addMagnetEnchantLore(ItemMeta meta, int level) {
+        if (meta == null || level < 1) {
+            LogUtils.debug("Skipping lore update: invalid meta or level {}", level);
+            return;
+        }
+
+        String romanLevel = toRoman(level);
+        String loreLine = ChatColor.translateAlternateColorCodes('&', loreFormat.replace("%level%", romanLevel));
+
+        List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
+        String magnetPrefix = ChatColor.stripColor(loreFormat.split("%level%")[0]);
+
+
+        lore.removeIf(line -> ChatColor.stripColor(line).contains(magnetPrefix));
+
+        lore.add(0, loreLine);
+
+        meta.setLore(lore);
     }
 
     private int combineLevels(int oldLevel, int newLevel){
@@ -129,50 +169,25 @@ public class MagnetEnchantService {
         return Math.max(oldLevel, newLevel);
     }
 
+    public Integer getMagnetLevel(ItemStack item){
 
+        Map<Enchantment, Integer> enchants;
 
-//    public void applyEnchant(ItemStack item, int level) {
-//        if (item == null) return;
-//
-//        NBT.modify(item, nbt -> {nbt.setInteger(NBT_KEY, level);});
-//        updateLore(item, level);
-//    }
-//
-//    public void removeEnchant(ItemStack item) {
-//        if (item == null) return;
-//
-//        NBT.modify(item, nbt -> {nbt.removeKey(NBT_KEY);});
-//        updateLore(item, 0);
-//    }
-//
-//    public boolean hasEnchant(ItemStack item) {
-//        if (item == null) return false;
-//
-//        return NBT.get(item, nbt -> (boolean) nbt.hasTag(NBT_KEY));
-//    }
-//
-//    public int getEnchantLevel(ItemStack item) {
-//        if (item == null) return -1;
-//
-//        return NBT.get(item, nbt -> (int) nbt.getInteger(NBT_KEY));
-//    }
-//
-//    private void updateLore(ItemStack item, int level) {
-//        if (item == null) return;
-//
-//        ItemMeta meta = item.getItemMeta();
-//        if (meta == null) return;
-//
-//        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-//        lore.removeIf(line -> line.contains(ColorUtils.remove(displayName)));
-//
-//        if (level > 0) {
-//            lore.add(displayName + " " + toRoman(level));
-//        }
-//
-//        meta.setLore(lore);
-//        item.setItemMeta(meta);
-//    }
+        if (item.getType() == Material.ENCHANTED_BOOK){
+            EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
+            if (meta == null) return 0;
+
+            enchants = meta.getStoredEnchants();
+        }else {
+            if (item.getItemMeta() == null) return 0;
+            enchants = item.getItemMeta().getEnchants();
+        }
+
+        for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()){
+            if (entry.getKey() == magnetEnchant) return entry.getValue();
+        }
+        return 0;
+    }
 
     public String toRoman(int level) {
         return switch (level) {
