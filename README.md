@@ -41,3 +41,10 @@
 # Конфиги
 ### 1. `config.yaml` [Файл](src/main/resources/config.yml)
 > ### Содержит основные данные
+
+
+# Связь
+## Telegram: [@PPFS_Studios](https://t.me/PPFS_Studios)
+
+# Лицензия
+## [MITM](LICENSE_PPFSS)
