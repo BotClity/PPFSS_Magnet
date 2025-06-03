@@ -19,21 +19,18 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class EnchantmentListener implements Listener {
     private final MagnetEnchantService enchantService;
     private final Enchantment magnetEnchantment;
     private final double chance;
     private final Random random = new Random();
-    private final Logger logger;
     private final int maxLevel;
 
     public EnchantmentListener(Plugin plugin, MagnetEnchantService enchantService) {
         this.enchantService = enchantService;
         this.magnetEnchantment = enchantService.getMagnetEnchant();
         this.chance = plugin.getConfig().getDouble("enchant.table.chance", 10) / 100;
-        this.logger = plugin.getLogger();
         this.maxLevel = magnetEnchantment.getMaxLevel();
     }
 
@@ -48,6 +45,7 @@ public class EnchantmentListener implements Listener {
         if (random.nextDouble() > chance) return;
 
         int enchantLevel = Math.min(event.getExpLevelCost() / 10 + 1, maxLevel);
+        enchantLevel = random.nextInt(enchantLevel) + 1;
 
 
         if (item.getType() == Material.BOOK) {
