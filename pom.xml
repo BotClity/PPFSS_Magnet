@@ -46,11 +46,11 @@
                     <relocations>
                         <relocation>
                             <pattern>de.tr7zw.changeme.nbtapi</pattern>
-                            <shadedPattern>com.ppfs.ppfs.nbtapi</shadedPattern>
+                            <shadedPattern>com.ppfs.nbtapi</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>com.ppfs.ppfs.bstats</shadedPattern>
+                            <shadedPattern>com.ppfs.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
