@@ -16,9 +16,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -137,6 +139,23 @@ public class MagnetListener implements Listener {
                 updateMagnet(player, level);
             }
         }.runTask(plugin);
+    }
+
+
+    @EventHandler
+    public void onPlaceBlock(BlockPlaceEvent event){
+        ItemStack item;
+
+        if (event.getHand() == EquipmentSlot.HAND){
+            item = event.getItemInHand();
+        }else{
+            item = event.getPlayer().getInventory().getItemInOffHand();
+        }
+
+
+        if (item.getType().isAir()) return;
+        if (!isMagnet(item)) return;
+        event.setCancelled(true);
     }
 
     private boolean isArmor(ItemStack item){
