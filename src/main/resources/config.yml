@@ -47,8 +47,8 @@ messages:
     description: "Показывает список доступных команд"
   no-permission-help: "§cУ вас нет прав!"
   magnet:
-    activated: "[PPFSS]&aМагнит активирован!"
-    deactivation: "[PPFSS]&cМагнит отключён!"
+    activated: "&2[PPFSS]&aМагнит активирован!"
+    deactivation: "&2[PPFSS]&cМагнит отключён!"
     stop-move: "&cНельзя перемещать активированный магнит"
 
 magnet-item:
