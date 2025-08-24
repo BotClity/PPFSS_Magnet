@@ -1,4 +1,4 @@
-permission-required: false
+permission-required: false # Разрешение magnet.use
 
 particles:
   enabled: true

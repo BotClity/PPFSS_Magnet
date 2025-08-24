@@ -20,6 +20,7 @@ public class MagnetCommand extends AbstractCommand {
 
         this.registerSubCommand(new SubGive(magnetService));
         this.registerSubCommand(new SubEnchant(magnetService));
+        this.registerSubCommand(new SubRemove(magnetService));
     }
 
     @Override
