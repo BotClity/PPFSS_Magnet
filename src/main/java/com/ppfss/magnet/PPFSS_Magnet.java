@@ -7,6 +7,8 @@ import com.ppfss.magnet.config.YamlConfigLoader;
 import com.ppfss.magnet.listener.MagnetListener;
 import com.ppfss.magnet.service.MagnetService;
 import com.ppfss.magnet.utils.LogUtils;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +26,9 @@ public final class PPFSS_Magnet extends JavaPlugin {
         new MagnetCommand(this, service);
 
         registerListeners(service);
+
+        Metrics metrics = new Metrics(this, 23867);
+        metrics.addCustomChart(new SingleLineChart("active_magnets", () -> service.getActiveMagnets().size()));
     }
 
     @Override

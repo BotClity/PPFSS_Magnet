@@ -48,6 +48,11 @@
                             <pattern>de.tr7zw.changeme.nbtapi</pattern>
                             <shadedPattern>com.ppfss.nbtapi</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>com.ppfss.bstat</shadedPattern>
+                        </relocation>
+
                     </relocations>
                 </configuration>
             </plugin>
