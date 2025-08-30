@@ -50,7 +50,7 @@ jobs:
         with:
           tag_name: v${{ env.VERSION }}
           name: PPFSS_Magnet v${{ env.VERSION }}
-          body: "Автоматический релиз версии ${{ env.VERSION }} из ветки prod"
+          body: "Автоматический релиз версии ${{ env.VERSION }}"
           files: target/PPFSS_Magnet.jar
           draft: false
           prerelease: false
