@@ -1,8 +1,8 @@
-// PPFSS_Magnet Plugin 
+// PPFSS_Libs Plugin
 // Авторские права (c) 2025 PPFSS
 // Лицензия: MIT
 
-package com.ppfss.magnet.adapter;
+package com.ppfss.libs.adapter;
 
 import com.google.gson.*;
 import org.bukkit.Particle;

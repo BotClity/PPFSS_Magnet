@@ -31,6 +31,7 @@ public class MagnetRunnable extends BukkitRunnable {
     public MagnetRunnable(MagnetService magnetService, Function<Player, Boolean> hasMagnet) {
         this.magnetService = magnetService;
         this.hasMagnet = hasMagnet;
+
         this.particleData = Config.getInstance().getParticleData();
     }
 
@@ -97,4 +98,6 @@ public class MagnetRunnable extends BukkitRunnable {
             }
         });
     }
+
+
 }

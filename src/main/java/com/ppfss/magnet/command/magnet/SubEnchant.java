@@ -4,9 +4,9 @@
 
 package com.ppfss.magnet.command.magnet;
 
-import com.ppfss.magnet.command.SubCommand;
+import com.ppfss.libs.command.SubCommand;
+import com.ppfss.libs.message.Message;
 import com.ppfss.magnet.config.MessageConfig;
-import com.ppfss.magnet.message.Message;
 import com.ppfss.magnet.model.MagnetData;
 import com.ppfss.magnet.service.MagnetService;
 import org.bukkit.command.Command;
@@ -17,10 +17,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class SubEnchant extends SubCommand {
-    private Message USAGE = new Message(
+    private final Message USAGE = new Message(
             "<yellow>/magnet enchant {Сила} {Радиус} {Лимит} <white>- зачарование предмета в руке"
     );
-    private MagnetService magnetService;
+    private final MagnetService magnetService;
 
     public SubEnchant( MagnetService magnetService) {
         super("enchant");
@@ -30,6 +30,8 @@ public class SubEnchant extends SubCommand {
 
     @Override
     public void execute(CommandSender sender, Command command, String label, String... args) {
+        MessageConfig messageConfig = MessageConfig.getInstance();
+
         if (!(sender instanceof Player player)){
             sender.sendMessage("Only players can use this command!");
             return;
@@ -42,7 +44,7 @@ public class SubEnchant extends SubCommand {
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType().isAir()){
-            MessageConfig.getInstance().getNoItemInHand().send(sender);
+            messageConfig.getNoItemInHand().send(sender);
             return;
         }
 
@@ -54,12 +56,12 @@ public class SubEnchant extends SubCommand {
 
             magnetData = new MagnetData(radius, strength, limit);
         }catch (NumberFormatException e){
-            MessageConfig.getInstance().getNotNumber().send(sender);
+            messageConfig.getNotNumber().send(sender);
             return;
         }
 
         magnetService.setupMagnetData(item, magnetData);
-        MessageConfig.getInstance().getMagnetEnchanted().send(sender);
+        messageConfig.getMagnetEnchanted().send(sender);
     }
 
     @Override

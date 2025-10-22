@@ -5,11 +5,13 @@
 package com.ppfss.magnet.config;
 
 import com.google.gson.annotations.SerializedName;
-import com.ppfss.magnet.message.Message;
+import com.ppfss.libs.config.YamlConfig;
+import com.ppfss.libs.config.YamlConfigLoader;
+import com.ppfss.libs.message.Message;
 import lombok.Getter;
 
 @Getter
-public class MessageConfig extends YamlConfig{
+public class MessageConfig extends YamlConfig {
     private static MessageConfig instance;
 
     @SerializedName("magnet-activated")
@@ -38,6 +40,12 @@ public class MessageConfig extends YamlConfig{
 
     @SerializedName("magnet-enchanted")
     Message magnetEnchanted = new Message("<dark_green>[PPFSS]<green>Магнит зачарован");
+
+    @SerializedName("plugin-reloaded")
+    Message pluginReloaded = new Message("<green>Конфиги плагина перезагружены");
+
+    @SerializedName("plugin-reload-usage")
+    Message pluginReloadUsage = new Message("<yellow>/magnet reload <white>- перезагружает конфиги");
 
     public static void load(YamlConfigLoader loader) {
         instance = loader.loadConfig("messages", MessageConfig.class);

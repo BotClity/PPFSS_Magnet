@@ -4,9 +4,9 @@
 
 package com.ppfss.magnet.command.magnet;
 
-import com.ppfss.magnet.command.SubCommand;
+import com.ppfss.libs.command.SubCommand;
+import com.ppfss.libs.message.Message;
 import com.ppfss.magnet.config.MessageConfig;
-import com.ppfss.magnet.message.Message;
 import com.ppfss.magnet.service.MagnetService;
 import org.bukkit.Material;
 import org.bukkit.command.Command;

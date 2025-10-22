@@ -1,19 +1,19 @@
-// PPFSS_Quests Plugin 
+// PPFSS_Libs Plugin
 // Авторские права (c) 2025 PPFSS
 // Лицензия: MIT
 
-package com.ppfss.magnet.config;
+package com.ppfss.libs.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
-import com.ppfss.magnet.adapter.ComponentAdapter;
-import com.ppfss.magnet.adapter.MaterialAdapter;
-import com.ppfss.magnet.adapter.MessageAdapter;
-import com.ppfss.magnet.adapter.ParticleAdapter;
-import com.ppfss.magnet.message.Message;
-import com.ppfss.magnet.utils.LogUtils;
+import com.ppfss.libs.adapter.ComponentAdapter;
+import com.ppfss.libs.adapter.MaterialAdapter;
+import com.ppfss.libs.adapter.MessageAdapter;
+import com.ppfss.libs.adapter.ParticleAdapter;
+import com.ppfss.libs.message.Message;
+import com.ppfss.libs.utils.LogUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -29,10 +29,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
 public class YamlConfigLoader {
@@ -48,6 +50,7 @@ public class YamlConfigLoader {
     private final Plugin plugin;
     private final TypeToken<Map<String, Object>> mapToken = new TypeToken<>() {
     };
+    private final Map<String, YamlConfig> cacheConfigs = new ConcurrentHashMap<>();
 
     public YamlConfigLoader(Plugin plugin) {
         this.plugin = plugin;
@@ -63,13 +66,20 @@ public class YamlConfigLoader {
 
     public <T extends YamlConfig> T loadConfig(String name, Class<T> type) {
         name = name.endsWith(".yml") ? name : name + ".yml";
-        File file = new File(plugin.getDataFolder(), name);
+        File dataFolder = plugin.getDataFolder();
+        if (!dataFolder.exists()){
+            dataFolder.mkdirs();
+        }
+
+        File file = new File(dataFolder, name);
 
         if (!file.exists()) {
             try(InputStream in = plugin.getResource(name)) {
 
                 if (in == null){
-                    return loadFromInstance(file, type);
+                    T instance = loadFromInstance(file, type);
+                    cacheConfigs.put(name, instance);
+                    return instance;
                 }
 
                 Files.copy(in, file.toPath());
@@ -91,8 +101,40 @@ public class YamlConfigLoader {
         instance.setFile(file);
         instance.setConfigLoader(this);
 
+        boolean updated = applyDefaultsFromClass(instance, config);
+        if (updated) {
+            saveConfig(instance);
+            LogUtils.info("Updated config with new defaults: " + file.getName());
+        }
+
+        cacheConfigs.put(name, instance);
         return instance;
     }
+
+    private boolean applyDefaultsFromClass(Object instance, YamlConfiguration config) {
+        boolean updated = false;
+        Class<?> clazz = instance.getClass();
+
+        for (Field field : clazz.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) continue;
+            field.setAccessible(true);
+            String path = field.getName();
+
+            if (!config.contains(path)) {
+                try {
+                    Object value = field.get(instance);
+                    if (value != null) {
+                        updated = true;
+                    }
+                } catch (IllegalAccessException e) {
+                    LogUtils.error("Failed to read field " + path + " in " + clazz.getSimpleName(), e);
+                }
+            }
+        }
+
+        return updated;
+    }
+
 
     private Map<String, Object> convertSectionToMap(ConfigurationSection section) {
         Map<String, Object> result = new HashMap<>();
@@ -105,6 +147,10 @@ public class YamlConfigLoader {
             }
         }
         return result;
+    }
+
+    public void saveAll(){
+        cacheConfigs.values().forEach(this::saveConfig);
     }
 
     public void saveConfig(YamlConfig instance) {

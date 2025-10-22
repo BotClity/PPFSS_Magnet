@@ -23,6 +23,8 @@ public class PerformanceRunnable extends BukkitRunnable {
         this.osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         this.magnetService = service;
         this.runtime = Runtime.getRuntime();
+
+
     }
 
 

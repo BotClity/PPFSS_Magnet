@@ -1,12 +1,13 @@
 package com.ppfss.magnet;
 
+import com.ppfss.libs.config.YamlConfigLoader;
+import com.ppfss.libs.message.Message;
+import com.ppfss.libs.utils.LogUtils;
 import com.ppfss.magnet.command.magnet.MagnetCommand;
 import com.ppfss.magnet.config.Config;
 import com.ppfss.magnet.config.MessageConfig;
-import com.ppfss.magnet.config.YamlConfigLoader;
 import com.ppfss.magnet.listener.MagnetListener;
 import com.ppfss.magnet.service.MagnetService;
-import com.ppfss.magnet.utils.LogUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.plugin.PluginManager;
@@ -16,6 +17,7 @@ public final class PPFSS_Magnet extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Message.load(this);
         LogUtils.init(this);
         YamlConfigLoader configLoader = new YamlConfigLoader(this);
 
@@ -23,7 +25,7 @@ public final class PPFSS_Magnet extends JavaPlugin {
 
         MagnetService service = new MagnetService(this);
 
-        new MagnetCommand(this, service);
+        new MagnetCommand(this, service, configLoader);
 
         registerListeners(service);
 

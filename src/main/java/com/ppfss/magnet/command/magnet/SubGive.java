@@ -4,10 +4,10 @@
 
 package com.ppfss.magnet.command.magnet;
 
-import com.ppfss.magnet.command.SubCommand;
+import com.ppfss.libs.command.SubCommand;
+import com.ppfss.libs.message.Message;
+import com.ppfss.libs.message.Placeholders;
 import com.ppfss.magnet.config.MessageConfig;
-import com.ppfss.magnet.message.Message;
-import com.ppfss.magnet.message.Placeholders;
 import com.ppfss.magnet.model.MagnetData;
 import com.ppfss.magnet.service.MagnetService;
 import org.bukkit.Bukkit;
@@ -32,6 +32,7 @@ public class SubGive extends SubCommand {
 
     @Override
     public void execute(CommandSender sender, Command command, String label, String... args) {
+        MessageConfig messageConfig = MessageConfig.getInstance();
         if (args.length < 4) {
             sendUsage(sender, command, label, args);
             return;
@@ -41,7 +42,7 @@ public class SubGive extends SubCommand {
         Player player = Bukkit.getPlayer(name);
 
         if (player == null) {
-            MessageConfig.getInstance().getPlayerNotFound().send(sender, Placeholders.of("player", name));
+            messageConfig.getPlayerNotFound().send(sender, Placeholders.of("player", name));
             return;
         }
 
@@ -53,19 +54,19 @@ public class SubGive extends SubCommand {
 
             magnetData = new MagnetData(radius, strength, limit);
         }catch (NumberFormatException exception){
-            MessageConfig.getInstance().getNotNumber().send(sender);
+            messageConfig.getNotNumber().send(sender);
             return;
         }
 
         PlayerInventory inventory = player.getInventory();
 
         if (inventory.firstEmpty() == -1) {
-            MessageConfig.getInstance().getNotEnoughSpace().send(sender);
+            messageConfig.getNotEnoughSpace().send(sender);
             return;
         }
 
         inventory.addItem(magnetService.getDefaultMagnet(magnetData));
-        MessageConfig.getInstance().getMagnetGiven().send(sender);
+        messageConfig.getMagnetGiven().send(sender);
     }
 
     @Override

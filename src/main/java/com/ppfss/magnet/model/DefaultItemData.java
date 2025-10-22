@@ -5,7 +5,7 @@
 package com.ppfss.magnet.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.ppfss.magnet.message.Message;
+import com.ppfss.libs.message.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

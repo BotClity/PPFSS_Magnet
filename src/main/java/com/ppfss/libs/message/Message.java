@@ -1,24 +1,21 @@
-// PPFSS_Quests Plugin
+// PPFSS_Libs Plugin
 // Авторские права (c) 2025 PPFSS
 // Лицензия: MIT
 
-package com.ppfss.magnet.message;
+package com.ppfss.libs.message;
 
-import com.ppfss.magnet.PPFSS_Magnet;
 import lombok.Data;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,7 +25,7 @@ import java.util.regex.Pattern;
 @Data
 @SuppressWarnings("unused")
 public class Message {
-    private static final JavaPlugin plugin = PPFSS_Magnet.getPlugin(PPFSS_Magnet.class);
+    private static Plugin plugin;
     private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacyAmpersand();
     private static final Pattern TAG_PATTERN = Pattern.compile("<(\\w+)>");
@@ -57,6 +54,10 @@ public class Message {
             Map.entry("italic", 'o'),
             Map.entry("reset", 'r')
     );
+
+    public static void load(Plugin plugin) {
+        Message.plugin = plugin;
+    }
 
     private final List<String> rawMessage = new CopyOnWriteArrayList<>();
 

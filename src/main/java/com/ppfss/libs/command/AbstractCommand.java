@@ -1,8 +1,8 @@
-// PPFSS_Quests Plugin
+// PPFSS_Libs Plugin
 // Авторские права (c) 2025 PPFSS
 // Лицензия: MIT
 
-package com.ppfss.magnet.command;
+package com.ppfss.libs.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

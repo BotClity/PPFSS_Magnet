@@ -1,8 +1,8 @@
-// PPFSS_Magnet Plugin 
+// PPFSS_Libs Plugin
 // Авторские права (c) 2025 PPFSS
 // Лицензия: MIT
 
-package com.ppfss.magnet.config;
+package com.ppfss.libs.config;
 
 import lombok.Getter;
 import lombok.Setter;

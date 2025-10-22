@@ -6,9 +6,9 @@ package com.ppfss.magnet.service;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import com.ppfss.libs.message.Placeholders;
 import com.ppfss.magnet.config.Config;
 import com.ppfss.magnet.config.MessageConfig;
-import com.ppfss.magnet.message.Placeholders;
 import com.ppfss.magnet.model.DefaultItemData;
 import com.ppfss.magnet.model.MagnetData;
 import com.ppfss.magnet.model.Reloadable;
@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;

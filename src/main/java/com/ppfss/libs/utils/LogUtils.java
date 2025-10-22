@@ -1,17 +1,21 @@
-package com.ppfss.magnet.utils;
+package com.ppfss.libs.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.plugin.Plugin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("unused")
 @Getter
 public class LogUtils {
     private static boolean ANSI_ENABLED;
+    @Setter
     private static boolean DEBUG_ENABLED;
     @Getter
     private static boolean CYRILLIC_ENABLED;
+    @Getter
     private static Logger LOGGER;
 
     public static void init(Plugin plugin) {

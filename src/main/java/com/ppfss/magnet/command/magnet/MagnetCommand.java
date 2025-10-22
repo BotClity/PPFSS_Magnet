@@ -4,7 +4,8 @@
 
 package com.ppfss.magnet.command.magnet;
 
-import com.ppfss.magnet.command.AbstractCommand;
+import com.ppfss.libs.command.AbstractCommand;
+import com.ppfss.libs.config.YamlConfigLoader;
 import com.ppfss.magnet.service.MagnetService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,12 +16,13 @@ import java.util.List;
 public class MagnetCommand extends AbstractCommand {
 
 
-    public MagnetCommand(Plugin plugin, MagnetService magnetService) {
+    public MagnetCommand(Plugin plugin, MagnetService magnetService, YamlConfigLoader configLoader) {
         super("magnet", List.of("магнит"), plugin);
 
         this.registerSubCommand(new SubGive(magnetService));
         this.registerSubCommand(new SubEnchant(magnetService));
         this.registerSubCommand(new SubRemove(magnetService));
+        this.registerSubCommand(new SubReload(magnetService, configLoader));
     }
 
     @Override

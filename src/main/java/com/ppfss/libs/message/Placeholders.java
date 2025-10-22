@@ -2,10 +2,11 @@
 // Авторские права (c) 2024 PPFSS
 // Лицензия: MIT
 
-package com.ppfss.magnet.message;
+package com.ppfss.libs.message;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Placeholders {
     private final Map<String, List<String>> placeholders;
 
@@ -33,19 +34,25 @@ public class Placeholders {
         return new Placeholders(placeholders);
     }
 
-    public Placeholders add(String key, String... values) {
-        if (key == null || values == null) throw new RuntimeException("key or values is null: " + key);
+    public synchronized Placeholders add(String key, Object... values) {
+        if (key == null || values == null) throw new IllegalArgumentException("key or values is null: " + key);
+        placeholders.put(key, Arrays.stream(values).map(Object::toString).toList());
+        return this;
+    }
+
+    public synchronized Placeholders add(String key, String... values) {
+        if (key == null || values == null) throw new IllegalArgumentException("key or values is null: " + key);
         placeholders.put(key, Arrays.asList(values));
         return this;
     }
 
-    public Placeholders add(String key, List<String> values) {
-        if (key == null || values == null) throw new RuntimeException("key or values is null: " + key);
+    public synchronized Placeholders add(String key, List<String> values) {
+        if (key == null || values == null) throw new IllegalArgumentException("key or values is null: " + key);
         placeholders.put(key, new ArrayList<>(values));
         return this;
     }
 
-    public Placeholders add(Placeholders other) {
+    public synchronized Placeholders add(Placeholders other) {
         if (other == null) return this;
         other.placeholders.forEach((k, v) -> this.placeholders.merge(k, new ArrayList<>(v), (oldV, newV) -> {
             List<String> merged = new ArrayList<>(oldV);
@@ -55,7 +62,22 @@ public class Placeholders {
         return this;
     }
 
-    public List<String> apply(String message) {
+    public synchronized List<String> apply(List<String> strings) {
+        if (strings == null) return Collections.emptyList();
+
+        List<String> result = new ArrayList<>();
+
+        for (String str : strings) {
+            List<String> temp = apply(str);
+            if (temp == null || temp.isEmpty()) continue;
+
+            result.addAll(temp);
+        }
+
+        return result;
+    }
+
+    public synchronized List<String> apply(String message) {
         if (message == null || message.isEmpty()) return Collections.emptyList();
 
         List<String> results = new ArrayList<>();
